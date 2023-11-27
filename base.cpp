@@ -45,7 +45,8 @@ int main(int argc, char const *argv[])
         file.seekg(0, std::ios::beg); // remember to reset the file pointer
 
         // read the entire file into the buffer the size of the file
-        std::vector<char> buffer(size);
+        // std::vector<char> buffer(size);
+        char* buffer = new char[size];
         file.read(&buffer[0], size);
 
         // Delimeter for tokenizing the chunks
@@ -113,6 +114,9 @@ int main(int argc, char const *argv[])
         auto duration_ms = std::chrono::duration_cast<std::chrono::microseconds>(duration);
         // std::cout << "Time taken (excl. sorting tally): " << duration_ms.count() << " ms" << std::endl;
         printf("Time taken to count words: %ld microsecs\n", duration_ms.count());
+
+        // clean up
+        delete[] buffer;
     }
 
     return 0;

@@ -47,7 +47,8 @@ int main(int argc, char const *argv[])
         file.seekg(0, std::ios::beg); // remember to reset the file pointer
 
         // read the entire file into the buffer the size of the file
-        std::vector<char> buffer(size);
+        // std::vector<char> buffer(size);
+        char* buffer = new char[size];
         file.read(&buffer[0], size);
 
         // Delimeter for tokenizing the chunks
@@ -57,7 +58,8 @@ int main(int argc, char const *argv[])
         // the tally is a hash table of words and their counts
         std::unordered_map<std::string, int> tally;
 
-        const int buffer_size = buffer.size();
+        // const int buffer_size = buffer.size();
+        const int buffer_size = size;
         std::string word;
         // int bytes_read = 0;
 
@@ -126,6 +128,9 @@ int main(int argc, char const *argv[])
         auto duration = end_time - start_time;
         auto duration_ms = std::chrono::duration_cast<std::chrono::microseconds>(duration);
         printf("Time taken to count words: %ld microsecs\n", duration_ms.count());
+
+        // clean up
+        delete[] buffer;
     }
 
     return 0;
