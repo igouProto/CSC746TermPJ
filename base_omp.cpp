@@ -98,6 +98,12 @@ int main(int argc, char const *argv[])
 
                 // move onto the next word
                 token = strtok_r(NULL, delim, &hold);
+
+                // break if we read enough so each thread reads the same amount
+                if (token >= &buffer[offset + chunk_size])
+                {
+                    break;
+                }
             }
 
             // printf("Thread %d end\n", thread_id);
