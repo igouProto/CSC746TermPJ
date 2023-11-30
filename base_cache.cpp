@@ -60,14 +60,11 @@ int main(int argc, char const *argv[])
         // start the timer
         std::chrono::time_point<std::chrono::high_resolution_clock> start_time = std::chrono::high_resolution_clock::now();
 
-        // local cache
-        // std::vector<char> cache(cache_size);
-        char cache[cache_size];
-
+        
+        char cache[cache_size]; // local cache
         int copy_size;
         int buffer_offset = 0; // offset into the buffer holding the file content
-        while (size > 0)
-        {
+        while (size > 0){
             // copy from buffer to cache
             copy_size = size > cache_size ? cache_size : size;
             memcpy(&cache[0], &buffer[buffer_offset], copy_size);
@@ -75,28 +72,19 @@ int main(int argc, char const *argv[])
             // process file content by tokenizing it
             char *token = std::strtok(&cache[0], delim);
             std::string word;
-            while (token != NULL)
-            {
-                // get the word
-                word = std::string(token);
-
+            while (token != NULL){
                 // turn it to lowercase
+                word = std::string(token);
                 std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-
-                // count words with 6 or more characters only. skip if less than 6
-                if (word.length() < 6)
-                {
+                // skip if char count is less than 6
+                if (word.length() < 6){
                     token = std::strtok(NULL, delim);
                     continue;
                 }
-
-                // write to tally
+                // count to tally, move on to the next word
                 tally[word] += 1;
-
-                // move onto the next word
                 token = std::strtok(NULL, delim);
             }
-
             // update remaining size
             size -= copy_size;
             buffer_offset += copy_size;

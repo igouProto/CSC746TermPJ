@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
 
         // read the entire file into the buffer the size of the file
         // std::vector<char> buffer(size);
-        char* buffer = new char[size];
+        char *buffer = new char[size];
         file.read(&buffer[0], size);
 
         // Delimeter for tokenizing the chunks
@@ -69,8 +69,6 @@ int main(int argc, char const *argv[])
         // parallel region
         #pragma omp parallel private(word) //, bytes_read)
         {
-            // we want to let each thread read it's own share of the buffer
-            // so we need: size of the buffer, number of threads, thread id
             int num_threads = omp_get_num_threads();
             int thread_id = omp_get_thread_num();
 
@@ -83,25 +81,25 @@ int main(int argc, char const *argv[])
             char *hold;
             char *token = strtok_r(&buffer[offset], delim, &hold); // thread-safe
 
-            while (token != NULL)
-            {
-                // get the word
+            // printf("Thread %d start, with chunk size %d\n", thread_id, chunk_size);
+
+            while (token != NULL){
+                // turn it to lowercase
                 word = std::string(token);
                 std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-
-                // count to tally
-                if (word.length() >= 6)
+                // skip if char count is less than 6
+                if (word.length() < 6){
+                   token = strtok_r(NULL, delim, &hold);
+                   continue;
+                }
+                // count to tally, move on to the next word
+                #pragma omp critical
                 {
-                    #pragma omp critical
                     tally[word] += 1;
                 }
-
-                // move onto the next word
                 token = strtok_r(NULL, delim, &hold);
-
                 // break if we read enough so each thread reads the same amount
-                if (token >= &buffer[offset + chunk_size])
-                {
+                if (token >= &buffer[offset + chunk_size]){
                     break;
                 }
             }

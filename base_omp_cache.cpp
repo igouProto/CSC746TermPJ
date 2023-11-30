@@ -49,7 +49,7 @@ int main(int argc, char const *argv[])
 
         // read the entire file into the buffer the size of the file
         // std::vector<char> buffer(size);
-        char* buffer = new char[size];
+        char *buffer = new char[size];
         file.read(&buffer[0], size);
 
         // Delimeter for tokenizing the chunks
@@ -65,8 +65,8 @@ int main(int argc, char const *argv[])
         // start the timer
         std::chrono::time_point<std::chrono::high_resolution_clock> start_time = std::chrono::high_resolution_clock::now();
 
-        // parallel region
-        #pragma omp parallel private(word) //, bytes_read)
+// parallel region
+#pragma omp parallel private(word) //, bytes_read)
         {
             // we want to let each thread read it's own share of the buffer
             // so we need: size of the buffer, number of threads, thread id
@@ -88,9 +88,7 @@ int main(int argc, char const *argv[])
             int remaining_bytes = chunk_size;
             int local_offset = 0;
 
-            while (remaining_bytes > 0)
-            {
-
+            while (remaining_bytes > 0){
                 // copy from buffer to local cache
                 int copy_size = remaining_bytes > local_cache_size ? local_cache_size : remaining_bytes;
                 memcpy(&local_cache[0], &buffer[offset + local_offset], copy_size);
@@ -98,24 +96,22 @@ int main(int argc, char const *argv[])
                 // process its share of the buffer by tokenizing it
                 char *hold;
                 char *token = strtok_r(&local_cache[0], delim, &hold); // thread-safe
-
-                while (token != NULL)
-                {
-                    // get the word
+                while (token != NULL){
+                    // turn it to lowercase
                     word = std::string(token);
                     std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-
-                    // count to tally
-                    if (word.length() >= 6)
+                    // skip if char count is less than 6
+                    if (word.length() < 6){
+                        token = strtok_r(NULL, delim, &hold);
+                        continue;
+                    }
+                    // count to tally, move on to the next word
+                    #pragma omp critical
                     {
-                        #pragma omp critical
                         tally[word] += 1;
                     }
-
-                    // move onto the next word
                     token = strtok_r(NULL, delim, &hold);
                 }
-
                 // update remaining size
                 remaining_bytes -= copy_size;
                 local_offset += copy_size;
