@@ -8,6 +8,8 @@ echo "building base_cache.cpp"
 g++ -O0 ../base_cache.cpp -o base_cache
 echo "building base_omp.cpp"
 g++ -O0 ../base_omp.cpp -o base_omp -fopenmp
+echo "building base_omp_TLS.cpp"
+g++ -O0 ../base_omp_TLS.cpp -o base_omp_TLS -fopenmp
 echo "building base_omp_cache.cpp"
 g++ -O0 ../base_omp_cache.cpp -o base_omp_cache -fopenmp
 echo "copying testrun.sh"
