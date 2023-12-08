@@ -93,7 +93,7 @@ int main(int argc, char const *argv[])
 
                 // process its share of the buffer by tokenizing it
                 char *hold;
-                char *token = strtok_r(&buffer[offset], delim, &hold); // thread-safe
+                char *token = strtok_r(&local_cache[0], delim, &hold); // thread-safe
 
                 while (token != NULL)
                 {
@@ -110,11 +110,6 @@ int main(int argc, char const *argv[])
                     local_tally[word] += 1;
 
                     token = strtok_r(NULL, delim, &hold);
-                    // break if we read enough so each thread reads the same amount
-                    if (token >= &buffer[offset + chunk_size])
-                    {
-                        break;
-                    }
                 }
 
                 // update remaining size + buffer offset
