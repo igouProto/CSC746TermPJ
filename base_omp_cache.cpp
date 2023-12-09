@@ -65,8 +65,8 @@ int main(int argc, char const *argv[])
         // start the timer
         std::chrono::time_point<std::chrono::high_resolution_clock> start_time = std::chrono::high_resolution_clock::now();
 
-// parallel region
-#pragma omp parallel private(word) //, bytes_read)
+        // parallel region
+        #pragma omp parallel private(word) //, bytes_read)
         {
             // we want to let each thread read it's own share of the buffer
             // so we need: size of the buffer, number of threads, thread id

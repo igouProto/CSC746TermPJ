@@ -116,7 +116,7 @@ int main(int argc, char const *argv[])
                 chunk_size -= copy_size;
                 offset += copy_size;
             }
-
+            
             // merge to shared tally
             #pragma omp critical
             {
